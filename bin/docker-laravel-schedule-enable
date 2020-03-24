@@ -1,7 +1,0 @@
-#!/bin/sh
-count=`crontab -l | grep "php artisan schedule:run" | wc -l`
-
-if [ "$count" -le 0 ]; then
-    (crontab -l; echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1") | crontab -
-    crond -L /dev/stdout
-fi
