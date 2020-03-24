@@ -15,7 +15,7 @@ sed -i "s/80 default_server/$NGINX_LISTEN_PORT default_server/g" /etc/nginx/conf
 sed -i "s/pm.max_children = 16/pm.max_children = $PHP_FPM_MAX_CHILDREN/g" /usr/local/etc/php-fpm.d/zzz-docker.conf
 
 if [ "$LARAVEL_HORIZON_ENABLE" = "true" ]; then
-    cp /etc/supervisor.d/horizon.stub /etc/supervisor.d/horizon.ini
+    cp -f /etc/supervisor.d/horizon.stub /etc/supervisor.d/horizon.ini
 fi
 
 if [ "$LARAVEL_SCHEDULE_ENABLE" = "true" ]; then
