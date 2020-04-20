@@ -23,8 +23,9 @@ if [ "$LARAVEL_SCHEDULE_ENABLE" = "yes" ]; then
 
     if [ "$count" -le 0 ]; then
         (crontab -l; echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1") | crontab -
-        crond -L /dev/stdout
     fi
+
+    crond -L /dev/stdout
 fi
 
 exec "$@"
