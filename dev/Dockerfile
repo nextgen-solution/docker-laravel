@@ -290,6 +290,8 @@ RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
   # smoke test
   && yarn --version
 
+RUN npm install -g cross-env
+
 # Install supervisor
 RUN set -eux && apk add --no-cache supervisor
 RUN set -eux && mkdir -p /var/log/supervisor
