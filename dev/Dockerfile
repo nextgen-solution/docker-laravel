@@ -5,8 +5,8 @@ FROM php:7.4-fpm-alpine
 LABEL maintainer="tetat.j@ngs.in.th"
 
 # FROM https://github.com/nginxinc/docker-nginx
-ENV NGINX_VERSION 1.16.1
-ENV NJS_VERSION   0.3.8
+ENV NGINX_VERSION 1.18.0
+ENV NJS_VERSION   0.4.3
 ENV PKG_RELEASE   1
 
 RUN set -x \
@@ -67,7 +67,7 @@ RUN set -x \
                 && cd ${tempDir} \
                 && hg clone https://hg.nginx.org/pkg-oss \
                 && cd pkg-oss \
-                && hg up -r 450 \
+                && hg up -r 494 \
                 && cd alpine \
                 && make all \
                 && apk index -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
@@ -102,6 +102,8 @@ RUN set -x \
 # Bring in tzdata so users could set the timezones through the environment
 # variables
     && apk add --no-cache tzdata \
+# Bring in curl and ca-certificates to make registering on DNS SD easier
+    && apk add --no-cache curl ca-certificates \
 # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
@@ -196,7 +198,7 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN composer global require hirak/prestissimo
 
 # FROM https://github.com/nodejs/docker-node
-ENV NODE_VERSION 12.16.1
+ENV NODE_VERSION 12.18.4
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
@@ -208,7 +210,7 @@ RUN addgroup -g 1000 node \
       && case "${alpineArch##*-}" in \
         x86_64) \
           ARCH='x64' \
-          CHECKSUM="7606d86e842b710e4321fe1c7f7a32a8e145f5e0659de406399cda5a37411d92" \
+          CHECKSUM="99715657ad621bd364070f176d27c6902ce49441af88e5df2dbe63392a3097da" \
           ;; \
         *) ;; \
       esac \
@@ -232,16 +234,15 @@ RUN addgroup -g 1000 node \
         python \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
     && for key in \
-      94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-      FD3A5288F042B6850C66B31F09FE44734EB7990E \
-      71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
-      DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
-      C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
-      B9AE9905FFD7803F25714661B63B535A4C206CA9 \
-      77984A986EBC2AA786BC0F66B01FBB92821C587A \
-      8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
       4ED778F539E3634C779C87C6D7062848A1AB005C \
+      94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
+      71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
+      8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
+      C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
+      C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C \
+      DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
       A48C2BEE680E841632CD4E44F07496B3EB3C1762 \
+      108F52B48DB57BB0CC439B2997B01419BD92F80A \
       B9E2F5981AA6E0CD28160D9FF13993A75599653C \
     ; do \
       gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
@@ -268,7 +269,7 @@ RUN addgroup -g 1000 node \
   && node --version \
   && npm --version
 
-ENV YARN_VERSION 1.22.0
+ENV YARN_VERSION 1.22.4
 
 RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
   && for key in \

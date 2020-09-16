@@ -3,8 +3,8 @@ FROM php:7.4-fpm-alpine
 LABEL maintainer="tetat.j@ngs.in.th"
 
 # FROM https://github.com/nginxinc/docker-nginx
-ENV NGINX_VERSION 1.16.1
-ENV NJS_VERSION   0.3.8
+ENV NGINX_VERSION 1.18.0
+ENV NJS_VERSION   0.4.3
 ENV PKG_RELEASE   1
 
 RUN set -x \
@@ -65,7 +65,7 @@ RUN set -x \
                 && cd ${tempDir} \
                 && hg clone https://hg.nginx.org/pkg-oss \
                 && cd pkg-oss \
-                && hg up -r 450 \
+                && hg up -r 494 \
                 && cd alpine \
                 && make all \
                 && apk index -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
@@ -100,6 +100,8 @@ RUN set -x \
 # Bring in tzdata so users could set the timezones through the environment
 # variables
     && apk add --no-cache tzdata \
+# Bring in curl and ca-certificates to make registering on DNS SD easier
+    && apk add --no-cache curl ca-certificates \
 # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
