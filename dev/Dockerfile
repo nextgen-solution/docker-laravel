@@ -1,4 +1,4 @@
-FROM composer:1.10 AS composer
+FROM composer:2.0 AS composer
 
 FROM php:7.4-fpm-alpine
 
@@ -194,8 +194,6 @@ COPY config/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY config/php-fpm.d/ /usr/local/etc/php-fpm.d/
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
-
-RUN composer global require hirak/prestissimo
 
 # FROM https://github.com/nodejs/docker-node
 ENV NODE_VERSION 12.18.4
