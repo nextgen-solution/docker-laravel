@@ -9,10 +9,10 @@ PHP_FPM_MAX_CHILDREN=${PHP_FPM_MAX_CHILDREN:-2}
 LARAVEL_HORIZON_ENABLE=${LARAVEL_HORIZON_ENABLE:-no}
 LARAVEL_SCHEDULE_ENABLE=${LARAVEL_SCHEDULE_ENABLE:-no}
 
-sed -i "s/worker_processes auto/worker_processes $NGINX_WORKER_PROCESSES/g" /etc/nginx/nginx.conf
-sed -i "s/80 default_server/$NGINX_LISTEN_PORT default_server/g" /etc/nginx/conf.d/default.conf
+sed -i -r "s/worker_processes\s+(auto|\d+)/worker_processes $NGINX_WORKER_PROCESSES/g" /etc/nginx/nginx.conf
+sed -i -r "s/listen\s+(\[::\]:)?(\d+)\s+default_server/listen \1$NGINX_LISTEN_PORT default_server/g" /etc/nginx/conf.d/default.conf
 
-sed -i "s/pm.max_children = 16/pm.max_children = $PHP_FPM_MAX_CHILDREN/g" /usr/local/etc/php-fpm.d/zzz-docker.conf
+sed -i -r "s/pm.max_children\s=\s(\d+)/pm.max_children = $PHP_FPM_MAX_CHILDREN/g" /usr/local/etc/php-fpm.d/zzz-docker.conf
 
 if [ "$LARAVEL_HORIZON_ENABLE" = "yes" ]; then
     cp -f /etc/supervisor.d/horizon.stub /etc/supervisor.d/horizon.ini
